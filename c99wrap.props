@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup
+    Condition="'$(C99WRAPBeforeTargets)' == '' and '$(C99WRAPAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
+    <C99WRAPBeforeTargets>Midl</C99WRAPBeforeTargets>
+    <C99WRAPAfterTargets>CustomBuild</C99WRAPAfterTargets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <C99WrapPath Condition= "'$(C99WRAPPATH)' == ''">$(VCInstallDir)</C99WrapPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <C99WRAP>
+      <Preprocessor>0</Preprocessor>
+      <Parser>0</Parser>
+      <ObjectFileName>$(IntDir)%(FileName).obj</ObjectFileName>
+      <CommandLineTemplate>"$(C99WRAPPATH)c99wrap.exe" cl.exe -c [AllOptions] [AdditionalOptions] "%(FullPath)"</CommandLineTemplate>
+      <ExecutionDescription>%(Identity)</ExecutionDescription>
+    </C99WRAP>
+  </ItemDefinitionGroup>
+</Project>

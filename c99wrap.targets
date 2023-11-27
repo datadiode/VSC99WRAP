@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <PropertyPageSchema
+      Include="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml" />
+    <AvailableItemName Include="C99WRAP">
+      <Targets>_C99WRAP</Targets>
+    </AvailableItemName>
+  </ItemGroup>
+  <PropertyGroup>
+    <ComputeLinkInputsTargets>
+      $(ComputeLinkInputsTargets);
+      ComputeC99WRAPOutput;
+    </ComputeLinkInputsTargets>
+    <ComputeLibInputsTargets>
+      $(ComputeLibInputsTargets);
+      ComputeC99WRAPOutput;
+    </ComputeLibInputsTargets>
+  </PropertyGroup>
+  <UsingTask
+    TaskName="C99WRAP"
+    TaskFactory="XamlTaskFactory"
+    AssemblyName="Microsoft.Build.Tasks.v4.0">
+    <Task>$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml</Task>
+  </UsingTask>
+  <Target
+    Name="_WriteC99WrapTlogs"
+    Condition="'@(C99WRAP)' != '' and '@(SelectedFiles)' == ''">
+    <ItemGroup>
+      <C99WRAP Remove="@(C99WRAP)" Condition="'%(C99WRAP.ExcludedFromBuild)' == 'true' or '%(C99WRAP.ObjectFileName)' == ''" />
+    </ItemGroup>
+    <ItemGroup Condition="'@(C99WRAP)' != ''">
+      <_C99WrapReadTlog Include="^%(C99WRAP.FullPath);%(C99WRAP.AdditionalDependencies)" />
+      <_C99WrapWriteTlog Include="^%(C99WRAP.FullPath);$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '%(C99WRAP.ObjectFileName)'))" />
+    </ItemGroup>
+    <WriteLinesToFile
+      Condition="'@(_C99WrapReadTlog)' != ''"
+      File="$(TLogLocation)C99Wrap.read.1u.tlog"
+      Lines="@(_C99WrapReadTlog->MetaData('Identity')->ToUpperInvariant());"
+      Overwrite="true"
+      Encoding="Unicode"/>
+    <WriteLinesToFile
+      Condition="'@(_C99WrapWriteTlog)' != ''"
+      File="$(TLogLocation)C99Wrap.write.1u.tlog"
+      Lines="@(_C99WrapWriteTlog->MetaData('Identity')->ToUpperInvariant());"
+      Overwrite="true"
+      Encoding="Unicode"/>
+    <ItemGroup>
+      <_C99WrapReadTlog Remove="@(_C99WrapReadTlog)" />
+      <_C99WrapWriteTlog Remove="@(_C99WrapWriteTlog)" />
+    </ItemGroup>
+  </Target>
+  <Target
+    Name="_C99WRAP"
+    BeforeTargets="$(C99WRAPBeforeTargets)"
+    AfterTargets="$(C99WRAPAfterTargets)"
+    Condition="'@(C99WRAP)' != ''"
+    Outputs="%(C99WRAP.ObjectFileName)"
+    Inputs="%(C99WRAP.Identity);%(C99WRAP.AdditionalDependencies);$(MSBuildProjectFile)"
+    DependsOnTargets="_SelectedFiles">
+    <ItemGroup Condition="'@(SelectedFiles)' != ''">
+      <C99WRAP Remove="@(C99WRAP)" Condition="'%(Identity)' != '@(SelectedFiles)'" />
+    </ItemGroup>
+    <Message
+      Condition="'@(C99WRAP)' != '' and '%(C99WRAP.ExcludedFromBuild)' != 'true'"
+      Importance="High"
+      Text="%(C99WRAP.ExecutionDescription)" />
+    <C99WRAP
+      Condition="'@(C99WRAP)' != '' and '%(C99WRAP.ExcludedFromBuild)' != 'true'"
+      Inputs="%(C99WRAP.Inputs)"
+      ObjectFileName="%(C99WRAP.ObjectFileName)"
+      IncludePaths="%(C99WRAP.IncludePaths)"
+      PreIncludeFiles="%(C99WRAP.PreIncludeFiles)"
+      PreprocessorDefinitions="%(C99WRAP.PreprocessorDefinitions)"
+      UndefinePreprocessorDefinitions="%(C99WRAP.UndefinePreprocessorDefinitions)"
+      TreatWarningsAsErrors="%(C99WRAP.TreatWarningsAsErrors)"
+      CommandLineTemplate="%(C99WRAP.CommandLineTemplate)"
+      AdditionalOptions="%(C99WRAP.AdditionalOptions)"
+    />
+  </Target>
+  <Target
+    Name="ComputeC99WRAPOutput"
+    Condition="'@(C99WRAP)' != ''">
+    <ItemGroup>
+      <Link Include="@(C99WRAP->Metadata('ObjectFileName')->Distinct()->ClearMetadata())" Condition="'%(C99WRAP.ExcludedFromBuild)' != 'true'"/>
+      <Lib Include="@(C99WRAP->Metadata('ObjectFileName')->Distinct()->ClearMetadata())" Condition="'%(C99WRAP.ExcludedFromBuild)' != 'true'"/>
+    </ItemGroup>
+  </Target>
+</Project>
