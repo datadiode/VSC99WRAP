@@ -163,6 +163,8 @@ if not exist "%SCRIPTDIR%\c99wrap_%C99WRAPVERSION%.zip" (
 )
 
 :InstallC99WRAP
+echo VCINSTALLDIR=%VCINSTALLDIR%
+echo VCTargetsPath=%VCTargetsPath%
 powershell.exe -Command Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('"%SCRIPTDIR%\c99wrap_%C99WRAPVERSION%.zip"', '"%SCRIPTDIR%\TempC99WRAPUnpack"') >nul 2>&1
 if not exist "%SCRIPTDIR%\TempC99WRAPUnpack" (
     echo Error: Failed to unpack C99WRAP download!
