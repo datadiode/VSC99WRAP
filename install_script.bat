@@ -48,7 +48,7 @@ if defined VCINSTALLDIR (
             set MSVC_VER=12
             goto MSVCVarsDone
         ) else if "%VisualStudioVersion%"=="11.0" (
-            set MSVC_VER=12
+            set MSVC_VER=11
             goto MSVCVarsDone
         ) else (
             echo Unknown Visual Studio environment detected '%VisualStudioVersion%', Creating a new one...
@@ -148,6 +148,7 @@ if %ERRORLEVEL% neq 0 (
     echo    Ensure that this script is run in a shell with the necessary write privileges
     goto Terminate
 )
+
 REM Download the latest c99wrap binary for windows
 if exist "%SCRIPTDIR%\c99wrap_%C99WRAPVERSION%.zip" (
     echo Using existing C99WRAP binary...
